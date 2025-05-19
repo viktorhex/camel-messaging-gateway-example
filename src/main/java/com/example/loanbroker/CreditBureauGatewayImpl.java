@@ -11,6 +11,10 @@ public class CreditBureauGatewayImpl implements CreditBureauGateway {
     @Override
     public int getCreditScore(String ssn) {
         String response = messageGateway.sendCreditRequest(ssn);
-        return Integer.parseInt(response); // Simplified parsing
+        try {
+            return Integer.parseInt(response);
+        } catch (NumberFormatException e) {
+            throw new RuntimeException("Invalid credit score response: " + response);
+        }
     }
 }
