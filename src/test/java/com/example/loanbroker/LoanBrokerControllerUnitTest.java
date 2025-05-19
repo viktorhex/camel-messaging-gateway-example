@@ -1,4 +1,4 @@
-package com.example.camel_messaging_gateway_example;
+package com.example.loanbroker;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,36 +11,36 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(MessageController.class)
-public class MessageControllerUnitTest {
+@WebMvcTest(LoanBrokerController.class)
+public class LoanBrokerControllerUnitTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
-    private UppercaseGateway uppercaseGateway;
+    private CreditBureauGateway creditBureauGateway;
 
     @Test
-    void shouldReturnUppercaseForValidInput() throws Exception {
-        when(uppercaseGateway.sendToUppercaseQueue("hello")).thenReturn("HELLO");
+    void shouldReturnLoanQuoteForValidSsn() throws Exception {
+        when(creditBureauGateway.getCreditScore("123456789")).thenReturn(750);
 
-        mockMvc.perform(get("/convert?text=hello"))
+        mockMvc.perform(get("/loan-quote?ssn=123456789"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("HELLO"));
+                .andExpect(content().string("Loan quote for SSN 123456789 with credit score: 750"));
     }
 
     @Test
-    void shouldReturnEmptyForEmptyInput() throws Exception {
-        when(uppercaseGateway.sendToUppercaseQueue("")).thenReturn("");
+    void shouldReturnEmptyForEmptySsn() throws Exception {
+        when(creditBureauGateway.getCreditScore("")).thenReturn(0);
 
-        mockMvc.perform(get("/convert?text="))
+        mockMvc.perform(get("/loan-quote?ssn="))
                 .andExpect(status().isOk())
-                .andExpect(content().string(""));
+                .andExpect(content().string("Loan quote for SSN  with credit score: 0"));
     }
 
     @Test
-    void shouldReturnBadRequestForMissingInput() throws Exception {
-        mockMvc.perform(get("/convert"))
+    void shouldReturnBadRequestForMissingSsn() throws Exception {
+        mockMvc.perform(get("/loan-quote"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(""));
     }
