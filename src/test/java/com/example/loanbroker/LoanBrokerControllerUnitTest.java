@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.Mockito.when;
@@ -12,17 +13,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(LoanBrokerController.class)
+@ComponentScan(basePackages = "com.example.loanbroker") // Include CreditBureauGatewayImpl
 public class LoanBrokerControllerUnitTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
-    private CreditBureauGateway creditBureauGateway;
+    private MessageGateway messageGateway; // Mocked
 
     @Test
     void shouldReturnLoanQuoteForValidSsn() throws Exception {
-        when(creditBureauGateway.getCreditScore("123456789")).thenReturn(750);
+        when(messageGateway.sendCreditRequest("123456789")).thenReturn("750");
 
         mockMvc.perform(get("/loan-quote?ssn=123456789"))
                 .andExpect(status().isOk())
@@ -31,7 +33,7 @@ public class LoanBrokerControllerUnitTest {
 
     @Test
     void shouldReturnEmptyForEmptySsn() throws Exception {
-        when(creditBureauGateway.getCreditScore("")).thenReturn(0);
+        when(messageGateway.sendCreditRequest("")).thenReturn("0");
 
         mockMvc.perform(get("/loan-quote?ssn="))
                 .andExpect(status().isOk())
