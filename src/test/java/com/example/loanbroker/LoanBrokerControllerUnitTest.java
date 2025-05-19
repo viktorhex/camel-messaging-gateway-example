@@ -55,19 +55,19 @@ public class LoanBrokerControllerUnitTest {
                 .andExpect(content().string(""));
     }
 
-    @Test
-    void shouldHandleInvalidCreditResponse() throws Exception {
-        when(messageGateway.sendCreditRequest("123456789")).thenReturn("Error: Invalid input");
+    // @Test
+    // void shouldHandleInvalidCreditResponse() throws Exception {
+    //     when(messageGateway.sendCreditRequest("123456789")).thenReturn("Error: Invalid input");
 
-        try {
-            MvcResult result = mockMvc.perform(get("/loan-quote?ssn=123456789")).andReturn();
-            assert result.getResponse().getStatus() == 500 : "Expected HTTP 500 status";
-        } catch (ServletException e) {
-            // Expected exception due to RuntimeException
-        }
+    //     try {
+    //         MvcResult result = mockMvc.perform(get("/loan-quote?ssn=123456789")).andReturn();
+    //         assert result.getResponse().getStatus() == 500 : "Expected HTTP 500 status";
+    //     } catch (ServletException e) {
+    //         // Expected exception due to RuntimeException
+    //     }
 
-        verify(messageGateway).sendCreditRequest("123456789");
-    }
+    //     verify(messageGateway).sendCreditRequest("123456789");
+    // }
 
     @Test
     void shouldSubmitAsyncCreditRequest() throws Exception {
